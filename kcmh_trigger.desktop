@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=KCMH trigger
+Exec=/home/pct-ubuntu/workspace/arnon/zaber-trigger/launch_pyqt_app.sh
+Icon=terminal
+Terminal=false
+Categories=Utility;
