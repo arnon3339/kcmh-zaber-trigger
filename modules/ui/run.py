@@ -806,37 +806,50 @@ class RunWidget(QWidget):
         }
 
     def enable_beam(self):
-        # try:
-        if self._ser:
-            try:
-                self.ser.close()
-            except:
-                pass
+        try:
+            if self._ser:
+                try:
+                    self.ser.close()
+                except:
+                    pass
 
-        fpga_data = self.get_fpga_data()
-        self._ser = serial.Serial(port=get_port("fpga"), baudrate=fpga_data["baudrate"], parity=fpga_data["parity"],
-                        bytesize=fpga_data["bytesize"], stopbits=fpga_data["stopbits"], timeout=1)
-        
-        self._ser.write(b'\x00')
-        self._ser.write(b'\x00')
+            fpga_data = self.get_fpga_data()
+            self._ser = serial.Serial(port=get_port("fpga"), baudrate=fpga_data["baudrate"], parity=fpga_data["parity"],
+                            bytesize=fpga_data["bytesize"], stopbits=fpga_data["stopbits"], timeout=1)
             
-        if self._enable_checkbox.checkState() == Qt.Checked:
-            self._ser.write(b'\x02')
-            for b in fpga_data["byte_start_list"][1:]:
-                self._ser.write(b)
+            self._ser.write(b'\x00')
+            self._ser.write(b'\x00')
+                
+            self._kill_beam_btn.setChecked(False)
+            if self._enable_checkbox.checkState() == Qt.Checked:
+                self._ser.write(b'\x02')
+                for b in fpga_data["byte_start_list"][1:]:
+                    self._ser.write(b)
 
-            self._kill_beam_btn.setEnabled(True)
-            self._launch_eudaq_default.setEnabled(True)
-            # self._window.running(True)
-        else:
-            self._ser.write(b'\xF2')
+                self._kill_beam_btn.setEnabled(True)
+                self._launch_eudaq_default.setEnabled(True)
+                # self._window.running(True)
+            else:
+                self._ser.write(b'\xF2')
+                self._kill_beam_btn.setEnabled(False)
+                self._launch_eudaq_default.setEnabled(False)
+                self._ser = None
+                # self._window.running(False)
+            # ser.close()
+            # except:
+            #     pass
+        except serial.SerialException:
+            fail_dialog = QMessageBox()
+            fail_dialog.setIcon(QMessageBox.Icon.Critical)
+            fail_dialog.setText("No FPGA connection")
+            fail_dialog.setWindowTitle("FPGA error")
+            fail_dialog.setDetailedText("Please connect to FPGA")
+            fail_dialog.setStandardButtons(QMessageBox.Ok) 
+            fail_dialog.exec_()
+            self._kill_beam_btn.setChecked(False)
             self._kill_beam_btn.setEnabled(False)
             self._launch_eudaq_default.setEnabled(False)
-            self._ser = None
-            # self._window.running(False)
-        # ser.close()
-        # except:
-        #     pass
+            return
     
     def set_ph_loc(self, loc_str):
         self._ph_x_label.setText(loc_str[0])
