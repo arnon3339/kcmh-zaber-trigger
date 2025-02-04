@@ -198,3 +198,13 @@
 /home/pct-ubuntu/workspace/arnon/zaber-trigger/output/run53154547_250129154554.raw,6,30000,100,60,200,1000,10,10000,200,10,9500,0,0,10
 /home/pct-ubuntu/workspace/arnon/zaber-trigger/output/run53154817_250129154823.raw,6,30000,100,60,200,1000,10,4000,200,4,9500,10,0,0
 /home/pct-ubuntu/workspace/arnon/zaber-trigger/output/run53155431_250129155437.raw,6,30000,100,60,200,1000,10,5000,200,5,9500,10,0,0
+/home/pct-ubuntu/workspace/arnon/kcmh-zaber-trigger/output/run62151944_250204151950.raw,6,30000,100,60,200,1000,10,1000,200,5,9500,0,0,10
+/home/pct-ubuntu/workspace/arnon/kcmh-zaber-trigger/output/run62154615_250204154622.raw,6,30000,100,60,200,1000,10,1000,200,1,9500,0,0,0
+/home/pct-ubuntu/workspace/arnon/kcmh-zaber-trigger/output/run62155039_250204155046.raw,6,30000,100,60,200,1000,10,1000,200,3,9500,0,0,0
+/home/pct-ubuntu/workspace/arnon/kcmh-zaber-trigger/output/run62155428_250204155434.raw,6,30000,100,60,200,1000,10,1000,200,3,9500,0,0,0
+/home/pct-ubuntu/workspace/arnon/kcmh-zaber-trigger/output/run62155750_250204155756.raw,6,30000,100,60,200,1000,10,1000,70,3,9500,0,0,0
+/home/pct-ubuntu/workspace/arnon/kcmh-zaber-trigger/output/run62155843_250204155849.raw,6,30000,100,60,200,1000,10,1000,70,3,9500,0,0,0
+/home/pct-ubuntu/workspace/arnon/kcmh-zaber-trigger/output/run62155932_250204155939.raw,6,30000,100,60,200,1000,10,1000,70,3,9500,0,0,0
+/home/pct-ubuntu/workspace/arnon/kcmh-zaber-trigger/output/run62160257_250204160304.raw,6,30000,100,60,200,1000,10,1000,70,3,9500,0,0,0
+/home/pct-ubuntu/workspace/arnon/kcmh-zaber-trigger/output/run62173751_250204173757.raw,6,30000,100,60,200,1000,10,1000,200,3,9500,0,0,0
+/home/pct-ubuntu/workspace/arnon/kcmh-zaber-trigger/output/run62173930_250204173936.raw,6,30000,100,60,200,1000,10,1000,200,3,9500,0,0,0

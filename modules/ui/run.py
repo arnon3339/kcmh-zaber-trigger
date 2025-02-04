@@ -88,6 +88,7 @@ class RunWidget(QWidget):
         self._outpath_btn.clicked.connect(self.chooseOutpath)
         self._current_file = None
         self._launch_eudaq_default = QPushButton("Launch default")
+        self._launch_eudaq_default.setEnabled(False)
         self._kill_beam_btn = QPushButton("Kill beam")
         self._kill_beam_btn.setCheckable(True)
         self._kill_beam_btn.setEnabled(False)
@@ -825,16 +826,15 @@ class RunWidget(QWidget):
                 self._ser.write(b'\x02')
                 for b in fpga_data["byte_start_list"][1:]:
                     self._ser.write(b)
-
                 self._kill_beam_btn.setEnabled(True)
                 self._launch_eudaq_default.setEnabled(True)
-                # self._window.running(True)
+                self._window.running(True)
             else:
                 self._ser.write(b'\xF2')
                 self._kill_beam_btn.setEnabled(False)
                 self._launch_eudaq_default.setEnabled(False)
                 self._ser = None
-                # self._window.running(False)
+                self._window.running(False)
             # ser.close()
             # except:
             #     pass
@@ -962,16 +962,21 @@ class RunWidget(QWidget):
             fail_dialog.exec_()
             self._kill_beam_btn.setChecked(False)
             return
+        
 
         if self._kill_beam_btn.isChecked():
             # self._ser.write(b'\x03')
             self._ser.write(b'\xFE')
+            self._launch_eudaq_default.setEnabled(False)
+            self._window.running(True)
             # self._window.running(True)
             # self._enable_checkbox.setDisabled(True)
             # self._gate_checkbox.setDisabled(True)
         else:
             # self._ser.write(b'\xF3')
             self._ser.write(b'\xEF')
+            self._launch_eudaq_default.setEnabled(True)
+            self._window.running(True)
             # self._window.running(False)
             # self._gate_checkbox.setDisabled(False)
             # self._enable_checkbox.setDisabled(False)
