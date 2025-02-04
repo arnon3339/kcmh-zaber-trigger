@@ -838,7 +838,7 @@ class RunWidget(QWidget):
             # ser.close()
             # except:
             #     pass
-        except serial.SerialException:
+        except ConnectionError:
             fail_dialog = QMessageBox()
             fail_dialog.setIcon(QMessageBox.Icon.Critical)
             fail_dialog.setText("No FPGA connection")
