@@ -818,19 +818,22 @@ class RunWidget(QWidget):
                         bytesize=fpga_data["bytesize"], stopbits=fpga_data["stopbits"], timeout=1)
         
         self._ser.write(b'\x00')
-        for b in fpga_data["byte_start_list"]:
-            self._ser.write(b)
+        self._ser.write(b'\x00')
             
         if self._enable_checkbox.checkState() == Qt.Checked:
             self._ser.write(b'\x02')
+            for b in fpga_data["byte_start_list"][1:]:
+                self._ser.write(b)
+
             self._kill_beam_btn.setEnabled(True)
-            # self._launch_eudaq_default.setDisabled(False)
+            self._launch_eudaq_default.setEnabled(True)
             # self._window.running(True)
         else:
             self._ser.write(b'\xF2')
             self._kill_beam_btn.setEnabled(False)
+            self._launch_eudaq_default.setEnabled(False)
+            self._ser = None
             # self._window.running(False)
-            # self._launch_eudaq_default.setDisabled(True)
         # ser.close()
         # except:
         #     pass
