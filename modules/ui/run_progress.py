@@ -49,39 +49,42 @@ class ProgressWorker(QRunnable):
             # trigger_f_byte_list = [int(trigger_f_bin[:-8], 2).to_bytes(1, 'big'), int(trigger_f_bin[-8:], 2).to_bytes(1, 'big')]
             # alpide_delay = self.kwargs['alpide_delay']
             # alpide_delay_byte = int(alpide_delay, 2).to_bytes(1, 'big')
-            ser = serial.Serial(port=get_port("fpga"), baudrate=baudrate, parity=parity,
-                            bytesize=bytesize, stopbits=stopbits, timeout=1)
+            # ser = serial.Serial(port=get_port("fpga"), baudrate=baudrate, parity=parity,
+            #                 bytesize=bytesize, stopbits=stopbits, timeout=1)
             # byte_start_list = [b'\x00', b'\x01', b'\x00', b'\x00', b'\x00', b'\x00', alpide_delay_byte, trigger_f_byte_list[0],
             #         trigger_f_byte_list[1]]
+            # byte_start_list = [b'\x01', b'\x00', b'\x00', b'\x00', b'\x00', alpide_delay_byte, trigger_f_byte_list[0],
+            #         trigger_f_byte_list[1]]
             # for b in byte_start_list:
-            #     ser.write(b)
+            #     self.kwargs['ser'].write(b)
             step_current_datetime = datetime.datetime.now()
             current_time = datetime.datetime.now()
             value = 0
             step = 1
-            ser.write(b'\xFE')
+            self.kwargs['ser'].write(b'\xFE')
             locs = self.kwargs['locs']
             while True:
-                if force_stop == True:
+                if force_stop:
                     self.signals.progress.emit({"type": "progress", "value": 1000})
-                    ser.write(b'\x00')
-                    ser.close()
+                    self.kwargs['ser'].write(b'\xEF')
+                    # ser.write(b'\x00')
+                    # ser.close()
                     break
                 
                 if (datetime.datetime.now() - step_current_datetime).total_seconds() > self.args[1]:
-                    ser.write(b'\xEF')
+                    self.kwargs['ser'].write(b'\xEF')
                     self.signals.progress.emit({"type": "step", "value": step, "locs": locs})
                     if step < self.args[2]:
                         locs = apply_steps_loop(self.kwargs['conn'], self.kwargs['steps'], self.kwargs['event_loop'])
-                    ser.write(b'\xFE')
+                    self.kwargs['ser'].write(b'\xFE')
                     value = int(step*1000/self.args[2])
                     step += 1
                     step_current_datetime = datetime.datetime.now()       
                     current_time = datetime.datetime.now()  
                     if step > self.args[2]:
                         # ser.write(b'\x00')
-                        ser.write(b'\xEF')
-                        ser.close()
+                        self.kwargs['ser'].write(b'\xEF')
+                        # ser.close()
                         break
                 elif (datetime.datetime.now() - current_time).total_seconds() > self.args[0]:
                     value += 1
@@ -126,6 +129,7 @@ class RunProgress(QDialog):
         self._loop = asyncio.get_event_loop()
         asyncio.set_event_loop(self._loop)
         self._window = window
+        self._ser = self._window._ser
         self._is_text_visible = False
         self._is_running = True
         self._is_thread = False
@@ -138,11 +142,11 @@ class RunProgress(QDialog):
     
     def closeEvent(self, event):
         subprocess.run(['tmux', 'kill-session', '-t', 'ITS3'])
-        if self._is_running:
-            ser = serial.Serial(port=get_port("fpga"), baudrate=baudrate, parity=parity,
-                            bytesize=bytesize, stopbits=stopbits, timeout=1)
-            ser.write(b'\x00')
-            ser.close()
+        # if self._is_running:
+        #     ser = serial.Serial(port=get_port("fpga"), baudrate=baudrate, parity=parity,
+        #                     bytesize=bytesize, stopbits=stopbits, timeout=1)
+        #     ser.write(b'\x00')
+        #     ser.close()
         print("closing running")
         
     def init_ui(self):
@@ -251,7 +255,7 @@ class RunProgress(QDialog):
                                          steps=self._zaber_steps, event_loop=self._event_loop,
             trigger_f_bin = bin(int(self._window._line_edits["Trigger Freq. (Hz)"].text())).lstrip('0b').zfill(16),
             alpide_delay = bin(int(self._window._line_edits["Beam delay (ms)"].text())).lstrip('0b').zfill(8),
-            locs=self._locs
+            locs=self._locs, ser=self._ser
             )
         progress_worker.signals.progress.connect(self.update_progress)
         progress_worker.signals.finished.connect(self.progress_finish)

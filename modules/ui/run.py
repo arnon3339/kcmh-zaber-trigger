@@ -732,12 +732,23 @@ class RunWidget(QWidget):
             fail_dialog.exec_()
             return
         
-        fpga_data = self.get_fpga_data()
-        ser = serial.Serial(port=get_port("fpga"), baudrate=fpga_data["baudrate"], parity=fpga_data["parity"],
-                        bytesize=fpga_data["bytesize"], stopbits=fpga_data["stopbits"], timeout=1)
+        # fpga_data = self.get_fpga_data()
+        # ser = serial.Serial(port=get_port("fpga"), baudrate=fpga_data["baudrate"], parity=fpga_data["parity"],
+        #                 bytesize=fpga_data["bytesize"], stopbits=fpga_data["stopbits"], timeout=1)
+
+        if self._enable_checkbox.checkState() != Qt.Checked:
+            fail_dialog = QMessageBox()
+            fail_dialog.setIcon(QMessageBox.Icon.Critical)
+            fail_dialog.setText("Enable is off!")
+            fail_dialog.setWindowTitle("KCMH error")
+            fail_dialog.setDetailedText("KCMH need to be enabled.")
+            fail_dialog.setStandardButtons(QMessageBox.Ok) 
+            fail_dialog.exec_()
+            self._kill_beam_btn.setChecked(False)
+            return
         
-        for b in fpga_data["byte_start_list"]:
-            ser.write(b)
+        # for b in fpga_data["byte_start_list"]:
+        #     self._ser.write(b)
         self._pid = eudaq.default_run(self._line_edits, self._outpath_label.text())
         self._run_progress_dialog = RunProgress(self)
         self._run_progress_dialog.exec_()
@@ -796,10 +807,17 @@ class RunWidget(QWidget):
 
     def enable_beam(self):
         # try:
+        if self._ser:
+            try:
+                self.ser.close()
+            except:
+                pass
+
         fpga_data = self.get_fpga_data()
-        self._ser = ser = serial.Serial(port=get_port("fpga"), baudrate=fpga_data["baudrate"], parity=fpga_data["parity"],
+        self._ser = serial.Serial(port=get_port("fpga"), baudrate=fpga_data["baudrate"], parity=fpga_data["parity"],
                         bytesize=fpga_data["bytesize"], stopbits=fpga_data["stopbits"], timeout=1)
         
+        self._ser.write(b'\x00')
         for b in fpga_data["byte_start_list"]:
             self._ser.write(b)
             
